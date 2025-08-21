@@ -7,13 +7,13 @@
  */
 
 // ROUTERS
-import HomeRouter from "@/modules/home/homeRouter";
+import AuthRouter from "@/modules/auth/authRouter";
 
 // DEFAULT
 export default function ModulesRouter() {
   return (
     <>
-      <HomeRouter />
+      <AuthRouter />
     </>
   );
 }
