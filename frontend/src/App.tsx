@@ -12,7 +12,7 @@ import { ThemeProvider } from "@/components/app/ThemeToggle";
 // DEPLOY
 export default function App() {
   return (
-    <ThemeProvider defaultTheme="light">
+    <ThemeProvider defaultTheme="dark">
       <ModulesRouter />
     </ThemeProvider>
   );

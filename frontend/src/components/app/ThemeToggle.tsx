@@ -29,7 +29,7 @@ const ThemeProviderContext = createContext<ThemeProviderState>(initialState);
 export function ThemeProvider({
   children,
   defaultTheme = "light",
-  storageKey = "vite-ui-theme",
+  storageKey = "crm-theme",
 }: ThemeProviderProps) {
   const [theme, setThemeState] = useState<Theme>(
     () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
@@ -47,6 +47,8 @@ export function ThemeProvider({
     </ThemeProviderContext.Provider>
   );
 }
+
+// APPLY
 export function useTheme() {
   return useContext(ThemeProviderContext);
 }
