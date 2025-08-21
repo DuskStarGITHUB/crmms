@@ -1,4 +1,3 @@
-// modules/home/homeRouter.tsx
 /**
  * =====================================================
  *  NAME    : homeRouter.tsx
@@ -6,9 +5,14 @@
  * =====================================================
  */
 
-// JOINERS
+// ROUTES
+import HomePage from "./homePage";
 
-// MODULE
+// ASEEMBLY MODULE
 export default function HomeRouter() {
-  return <></>;
+  return (
+    <>
+      <HomePage />
+    </>
+  );
 }
