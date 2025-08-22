@@ -89,7 +89,7 @@ Sigue estos pasos para configurar el proyecto localmente:
 5. **Configurar de BD**
 
    ```bash
-   # Modificar logica en el servicio server de nestjs para tu BD:
+   # Modificar logica en el servicio/module server y de nestjs para tu BD:
    this.pool = new Pool({
       user: process.env.POSTGRES_USER,
       host: process.env.POSTGRES_HOST ,
@@ -97,18 +97,16 @@ Sigue estos pasos para configurar el proyecto localmente:
       password: process.env.POSTGRES_PASSWORD ,
       port: Number(process.env.POSTGRES_PORT ?? 5432),
     });
-    this.initTables()
-      .then(() => this.initAdmin())
-      .catch((e) => console.error('Error inicializando DB:', e));
-   }
-   private async initTables() {
-    # Tablas y consultas etc
    # Usuario de Accesso por defecto en tu BD
    private async initAdmin() {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@crmms.com';
     const adminPass = process.env.ADMIN_PASS || 'C1R2M!0MlS';
     }
-   }
+    # Tiempo y Key JWT
+    JwtModule.register(
+      secret: process.env.JWT_SECRET ?? 'Sup3rS3cr3tJWT!',
+      signOptions: { expiresIn: process.env.JWT_EXPIRES_IN ?? '4hr' },
+    }),
    ```
 
 6. **Ejecutar en modo desarrollo**
