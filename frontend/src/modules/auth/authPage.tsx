@@ -9,6 +9,7 @@
 import { useState } from "react";
 import LoginForm from "./LoginForm";
 import RegisterForm from "./RegisterForm";
+import background from "./assets/background-auth.png";
 
 // LOGIC
 type Props = { onLoginSuccess?: () => void };
@@ -19,10 +20,23 @@ export default function AuthPage({ onLoginSuccess }: Props) {
   const [errMsg, setErrMsg] = useState<string | null>(null);
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
-      <div className="hidden md:flex w-1/2 bg-gray-900 items-center justify-center">
-        <span className="text-white text-lg font-semibold">
-          [ Imagen aquí ]
-        </span>
+      <div
+        className="hidden md:flex w-1/2 relative"
+        style={{
+          backgroundImage: `url(${background})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
+        <div className="absolute inset-0 bg-popover/40"></div>
+        <div className="relative z-10 flex items-end justify-start h-full p-6">
+          <h1 className="text-2xl md:text-3xl font-semibold font-sans text-white tracking-wide drop-shadow-sm leading-tight max-w-xs">
+            Customer Relationship Management
+            <span className="block text-xl md:text-2xl mt-1 font-medium tracking-normal">
+              Master System
+            </span>
+          </h1>
+        </div>
       </div>
       <div className="flex w-full md:w-1/2 items-center justify-center px-6 py-10 bg-background">
         <div className="flex flex-col items-center w-full max-w-md space-y-6">
