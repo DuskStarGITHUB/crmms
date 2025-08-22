@@ -57,7 +57,7 @@ export default function AuthPage({ onLoginSuccess }: Props) {
             <div className="text-red-600 text-sm text-center">{errMsg}</div>
           )}
           <button
-            className="text-sm text-blue-600 hover:underline cursor-pointer"
+            className="text-sm text-blue-600 hover:underline cursor-pointer border-4"
             onClick={() => setIsRegister(!isRegister)}
           >
             {isRegister
