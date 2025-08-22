@@ -7,6 +7,9 @@
 ![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 
+<img width="1561" height="893" alt="image" src="https://github.com/user-attachments/assets/4ec5024c-e35a-4110-9073-3f687b099997" />
+
+
 ## Índice
 
 - [¿Qué es CRMMS?](#-qué-es-crmms)
