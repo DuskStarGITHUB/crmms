@@ -14,10 +14,10 @@ export class AuthService {
   private pool: Pool;
   constructor(private jwtService: JwtService) {
     this.pool = new Pool({
-      user: process.env.POSTGRES_USER || 'duskstar',
-      host: process.env.POSTGRES_HOST || 'localhost',
-      database: process.env.POSTGRES_DB || 'crmms',
-      password: process.env.POSTGRES_PASSWORD || 'Sup3rS3cr3t!',
+      user: process.env.POSTGRES_USER,
+      host: process.env.POSTGRES_HOST ,
+      database: process.env.POSTGRES_DB ,
+      password: process.env.POSTGRES_PASSWORD ,
       port: Number(process.env.POSTGRES_PORT ?? 5432),
     });
     this.initTables()

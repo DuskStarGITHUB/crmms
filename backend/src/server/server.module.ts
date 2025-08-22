@@ -3,6 +3,6 @@ import { ServerController } from './server.controller';
 
 @Module({
   controllers: [ServerController],
-  providers: [], // ← Vacío ya que eliminamos el servicio
+  providers: [],
 })
 export class ServerModule {}
