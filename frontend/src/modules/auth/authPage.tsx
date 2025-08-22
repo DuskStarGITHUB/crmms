@@ -30,9 +30,9 @@ export default function AuthPage({ onLoginSuccess }: Props) {
       >
         <div className="absolute inset-0 bg-popover/50"></div>
         <div className="relative z-10 flex items-end justify-start h-full p-6">
-          <h1 className="text-2xl md:text-3xl font-semibold font-sans text-white tracking-wide drop-shadow-sm leading-tight max-w-xs">
+          <h1 className="text-4xl md:text-5xl font-serif font-bold  tracking-wide drop-shadow-lg leading-snug max-w-lg">
             Customer Relationship Management
-            <span className="block text-xl md:text-2xl mt-1 font-medium tracking-normal">
+            <span className="block text-3xl md:text-4xl mt-2 font-semibold tracking-tight ">
               Master System
             </span>
           </h1>
@@ -57,7 +57,7 @@ export default function AuthPage({ onLoginSuccess }: Props) {
             <div className="text-red-600 text-sm text-center">{errMsg}</div>
           )}
           <button
-            className="text-sm text-blue-600 hover:underline cursor-pointer border-4 border-accent-foreground"
+            className="text-sm text-blue-600 hover:underline cursor-pointer border-8 border-accent-foreground"
             onClick={() => setIsRegister(!isRegister)}
           >
             {isRegister
