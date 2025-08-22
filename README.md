@@ -9,14 +9,6 @@
 
 <img width="1561" height="893" alt="image" src="https://github.com/user-attachments/assets/4ec5024c-e35a-4110-9073-3f687b099997" />
 
-
-## Índice
-
-- [¿Qué es CRMMS?](#-qué-es-crmms)
-- [Características Principales](#-funcionalidades-principales)
-- [🛠️ Tecnologías Utilizadas](#️-tecnologías-utilizadas)
-- [📦 Instalación y Configuración](#-instalacion-y-configuracion)
-
 ## ¿Qué es CRMMS?
 
 **CRMMS** (Customer Relationship Management Master System) es un sistema integral de gestión de relaciones con clientes diseñado para optimizar y centralizar todas las interacciones con clientes en una plataforma moderna y escalable.
