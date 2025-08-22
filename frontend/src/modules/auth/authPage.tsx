@@ -1,33 +1,44 @@
-// PAGE AUTH
-export default function AuthPage() {
+/**
+ * =====================================================
+ *  NAME    : authPage.tsx
+ *  DESCRIPTION: authentication page
+ * =====================================================
+ */
+
+// DEPENDENCIES && COMPONENTS
+import { useState } from "react";
+import LoginForm from "./LoginForm";
+import RegisterForm from "./RegisterForm";
+
+// LOGIC
+type Props = { onLoginSuccess?: () => void };
+
+// PAGE
+export default function AuthPage({ onLoginSuccess }: Props) {
+  const [isRegister, setIsRegister] = useState(false);
+  const [errMsg, setErrMsg] = useState<string | null>(null);
   return (
-    <div className="flex flex-col items-center justify-center h-full">
-      <h2 className="text-xl font-bold mb-4">Login</h2>
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          localStorage.setItem("module", "true");
-          window.location.reload();
-        }}
-        className="flex flex-col gap-2"
+    <div className="flex flex-col items-center justify-center min-h-screen px-4">
+      <h2 className="text-xl font-bold mb-4">
+        {isRegister ? "Registro" : "Login"}
+      </h2>
+      {isRegister ? (
+        <RegisterForm
+          setErrMsg={setErrMsg}
+          onSuccess={() => setIsRegister(false)}
+        />
+      ) : (
+        <LoginForm setErrMsg={setErrMsg} onSuccess={onLoginSuccess} />
+      )}
+      {errMsg && <div className="text-red-600 text-sm mt-2">{errMsg}</div>}
+      <button
+        className="mt-3 text-blue-700 underline"
+        onClick={() => setIsRegister(!isRegister)}
       >
-        <input
-          type="text"
-          placeholder="Usuario"
-          className="border px-2 py-1 rounded"
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          className="border px-2 py-1 rounded"
-        />
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Entrar
-        </button>
-      </form>
+        {isRegister
+          ? "¿Ya tienes cuenta? Inicia sesión"
+          : "¿No tienes cuenta? Regístrate"}
+      </button>
     </div>
   );
 }
