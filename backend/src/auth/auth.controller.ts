@@ -1,3 +1,11 @@
+/**
+ * =====================================================
+ *  NAME    : auth.controller.ts
+ *  DESCRIPTION: auth controller
+ * =====================================================
+ */
+
+// DEPENDENCIES
 import {
   Controller,
   Post,
@@ -9,9 +17,11 @@ import {
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
 
+// CONTROLLER
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(private readonly authService: AuthService) { }
+  // REGISTER
   @Post('register')
   async register(@Body() body: any) {
     try {
@@ -24,6 +34,7 @@ export class AuthController {
       );
     }
   }
+  // LOGIN
   @Post('login')
   async login(@Body() body: { email: string; password: string }) {
     try {
@@ -35,6 +46,7 @@ export class AuthController {
       );
     }
   }
+  // VALID TOKEN
   @Get('me')
   async me(@Headers('authorization') authorization?: string) {
     try {
@@ -46,6 +58,7 @@ export class AuthController {
       );
     }
   }
+  // VERIFY TOKEN
   @Post('verify')
   async verify(@Body() body: { token: string }) {
     try {

@@ -89,7 +89,7 @@ Sigue estos pasos para configurar el proyecto localmente:
 5. **Configurar de BD**
 
    ```bash
-   # Modificar logica en el servicio auth de nestjs para tu BD:
+   # Modificar logica en el servicio server de nestjs para tu BD:
    this.pool = new Pool({
       user: process.env.POSTGRES_USER,
       host: process.env.POSTGRES_HOST ,
@@ -102,54 +102,11 @@ Sigue estos pasos para configurar el proyecto localmente:
       .catch((e) => console.error('Error inicializando DB:', e));
    }
    private async initTables() {
-    await this.pool.query(`
-      CREATE TABLE IF NOT EXISTS users (
-        id SERIAL PRIMARY KEY,
-        first_name VARCHAR(50) NOT NULL,
-        last_name VARCHAR(50) NOT NULL,
-        address VARCHAR(255),
-        phone VARCHAR(20)
-      );
-    `);
-    await this.pool.query(`
-      CREATE TABLE IF NOT EXISTS accounts (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        role VARCHAR(20) DEFAULT 'user',
-        user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE
-      );
-    `);
-    await this.pool.query(`
-      CREATE TABLE IF NOT EXISTS access (
-        id SERIAL PRIMARY KEY,
-        email VARCHAR(100) UNIQUE NOT NULL,
-        password_hash VARCHAR(255) NOT NULL,
-        role VARCHAR(20) DEFAULT 'admin',
-        user_id INT UNIQUE NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-        created_by INT REFERENCES users(id)
-      );
-    `);
-   }
+    # Tablas y consultas etc
+   # Usuario de Accesso por defecto en tu BD
    private async initAdmin() {
     const adminEmail = process.env.ADMIN_EMAIL || 'admin@crmms.com';
     const adminPass = process.env.ADMIN_PASS || 'C1R2M!0MlS';
-    const exists = await this.pool.query(
-      'SELECT * FROM access WHERE email=$1',
-      [adminEmail],
-    );
-    if (exists.rows.length === 0) {
-      const newUser = await this.pool.query(
-        `INSERT INTO users (first_name, last_name) VALUES ($1,$2) RETURNING id`,
-        ['Admin', 'CRM'],
-      );
-      const hash = await bcrypt.hash(adminPass, 12);
-      await this.pool.query(
-        `INSERT INTO access (email, password_hash, role, user_id)
-         VALUES ($1,$2,$3,$4)`,
-        [adminEmail, hash, 'admin', newUser.rows[0].id],
-      );
-      console.log('✅ Admin creado:', adminEmail, '/', adminPass);
     }
    }
    ```
@@ -158,3 +115,97 @@ Sigue estos pasos para configurar el proyecto localmente:
    ```bash
    npm run stack
    ```
+
+---
+
+# Cuentas y Roles en la Base de Datos
+
+En la base de datos se crean principalmente las tablas **Access** y **Accounts**, que representan distintos tipos de credenciales en el CRM.
+
+---
+
+## Jerarquía General (Esquema)
+
+```
+Admin
+└─ Moderador (Mod)
+  └─ Access Owner
+    └─ Guild (empresa)
+      └─ Spot (jefe de área/sector)
+        └─ Builder (usuario normal del CRM)
+─ User (registro independiente)
+```
+
+---
+
+## Roles de Administración del Entorno
+
+### Admin
+
+- Máximo rango del CRM.
+- Puede crear **Moderadores** (mods).
+- Puede ver, editar y administrar todas las **Access Owner** y sus subcuentas (Guilds, Spots y Builders).
+- No utiliza herramientas normales del CRM (reportes de empresa, facturas, etc.).
+- Funciones: supervisión completa del sistema, gestión de mods y Owners.
+
+### Moderador (Mod)
+
+- Permisos casi iguales al Admin pero limitado a los **Access Owner** que él creó.
+- Cada mod solo puede administrar los Owners que haya creado y sus respectivas subcuentas.
+- Funciones:
+  - Ver reportes de fallos y tickets.
+  - Administrar cuentas de Guilds, Spots y Builders que pertenezcan a los Owners que creó.
+- No puede usar el CRM como usuario normal.
+
+---
+
+## Roles de Administración de Servicio
+
+### Access Owner
+
+- Representa la “administración de servicio”.
+- Puede crear **Guilds** (empresas).
+- Cada Guild puede tener varios **Spots**.
+- Cada Spot puede tener varios **Builders**.
+- Funciones:
+  - Crear y gestionar Guilds y sus Spots y Builders.
+  - Supervisar información independiente de cada Guild.
+- Limitación: los Access Owner administran solo las cuentas bajo su creación.
+
+### Guild
+
+- Representa lógicamente una empresa en la base de datos.
+- Funciona como contenedor de Spots y Builders.
+- No tiene “actividad directa” sino que es una representación lógica.
+
+### Spot (Account)
+
+- Jefe de área, sector o departamento dentro de una Guild.
+- Funciones:
+  - Puede crear y gestionar Builders bajo su Spot.
+  - Acceso a información y reportes de su área (ejemplo: contabilidad, almacén).
+- Limitación: solo puede ver y administrar su área específica.
+
+### Builder (Account)
+
+- Usuario normal del CRM.
+- Funciones:
+  - Uso normal del CRM según su área asignada por el Spot.
+  - Ejemplo: manejar gastos, facturas, entradas y salidas de dinero de su sector.
+
+### User (Account)
+
+- Registro independiente, fuera de la jerarquía de Guild.
+- Funciones básicas: ver reportes públicos de alguna Guild.
+
+---
+
+## Resumen de la Jerarquía (Escalera)
+
+- **Admin** → supervisión total.
+- **Moderador (Mod)** → supervisión limitada a Owners que creó.
+- **Access Owner** → administra Guilds y crea Spots y Builders.
+- **Guild** → contenedor lógico de Spots y Builders.
+- **Spot** → jefe de área, puede crear Builders y ver información de su sector.
+- **Builder** → usuario normal del CRM, limitado a su Spot.
+- **User** → cuenta independiente, acceso básico a información pública.
