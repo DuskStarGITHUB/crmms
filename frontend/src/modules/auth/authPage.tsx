@@ -38,11 +38,8 @@ export default function AuthPage({ onLoginSuccess }: Props) {
           </h1>
         </div>
       </div>
-      <div className="flex w-full md:w-1/2 items-center justify-center px-6 py-10 bg-background">
+      <div className="flex w-full md:w-1/2 items-center justify-center px-6 py-10 bg-background max-h-dvh">
         <div className="flex flex-col items-center w-full max-w-md space-y-6">
-          <h2 className="text-2xl font-bold text-center">
-            {isRegister ? "Crear Cuenta || CRM" : "Login || CRM"}
-          </h2>
           <div className="w-full flex justify-center">
             {isRegister ? (
               <RegisterForm

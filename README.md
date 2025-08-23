@@ -202,3 +202,5 @@ Admin
 - **Spot** → jefe de área, puede crear Builders y ver información de su sector.
 - **Builder** → usuario normal del CRM, limitado a su Spot.
 - **User** → cuenta independiente, acceso básico a información pública.
+
+---

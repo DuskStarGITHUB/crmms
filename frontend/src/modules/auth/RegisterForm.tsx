@@ -76,8 +76,8 @@ export default function RegisterForm({ onSuccess, setErrMsg }: Props) {
     }
   };
   return (
-    <Card className="w-full max-w-sm shadow-lg">
-      <CardHeader>
+    <Card className="w-full max-w-sm shadow-lg pb-2">
+      <CardHeader className="gap-0">
         <CardTitle className="text-center text-xl font-bold">
           Registro
         </CardTitle>
