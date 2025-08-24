@@ -1,10 +1,16 @@
-"use client";
+/**
+ * =====================================================
+ *  NAME    : homePage.tsx
+ *  DESCRIPTION: home page (dashbaords roles)
+ * =====================================================
+ */
 
+// DEPENDENCIES && COMPONENTS
+"use client";
 import { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
 import { fetchAuthData } from "./utils/token";
 import type { AuthData } from "./utils/token";
-
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
@@ -21,7 +27,6 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-
 import AdminDashboard from "./AdminDashboard";
 import OwnerDashboard from "./OwnerDashboard";
 import SpotDashboard from "./SpotDashboard";
@@ -29,25 +34,22 @@ import UserDashboard from "./UserDashboard";
 import ConfigurationPage from "./configurationPage";
 import ProfilePage from "./profilePage";
 
+// PAGE
 export default function HomePage() {
   const [data, setData] = useState<AuthData | null>(null);
   const [active, setActive] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) fetchAuthData(token).then(setData);
   }, []);
-
   const role = data?.account.role ?? "";
-
   const logout = () => {
     localStorage.removeItem("token");
     setActive("logout");
     setData(null);
   };
-
   const sidebarOptions: Record<
     string,
     { label: string; icon: any; action: () => void }[]
@@ -131,13 +133,11 @@ export default function HomePage() {
       },
     ],
   };
-
   const renderContent = () => {
     if (!data || active === "logout")
       return <div className="text-center mt-20 text-xl">Sesión cerrada</div>;
     if (active === "profile") return <ProfilePage />;
     if (active === "configuration") return <ConfigurationPage />;
-
     switch (role) {
       case "admin":
       case "mod":
@@ -152,7 +152,6 @@ export default function HomePage() {
         return <div>Sección desconocida</div>;
     }
   };
-
   const SidebarButton = ({
     opt,
   }: {
@@ -169,7 +168,6 @@ export default function HomePage() {
       {sidebarOpen && opt.label}
     </Button>
   );
-
   const SidebarFooter = () => {
     if (!sidebarOpen)
       return (
@@ -201,7 +199,6 @@ export default function HomePage() {
       </div>
     );
   };
-
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
       <aside
@@ -226,7 +223,6 @@ export default function HomePage() {
           <SidebarFooter />
         </div>
       </aside>
-
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger asChild>
           <Button
@@ -286,7 +282,6 @@ export default function HomePage() {
           </div>
         </SheetContent>
       </Sheet>
-
       <main className="flex-1 overflow-auto p-6">
         {renderContent()}
         <Outlet />

@@ -4,7 +4,16 @@
  *  DESCRIPTION: Dashboard de Usuarios estándar
  * =====================================================
  */
-export default function UserDashboard({ section, data }) {
+
+// DEPENDENCIES
+import type { AuthData } from "./utils/token";
+interface AdminDashboardProps {
+  section: "dashboard" | "tickets" | "credentials" | string;
+  data: AuthData;
+}
+
+// DASHBOARD
+export default function UserDashboard({ section, data }: AdminDashboardProps) {
   switch (section) {
     case "tickets":
       return <div>📩 Mis Tickets</div>;

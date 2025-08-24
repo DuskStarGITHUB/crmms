@@ -4,7 +4,16 @@
  *  DESCRIPTION: Dashboard de Administradores y Moderadores
  * =====================================================
  */
-export default function AdminDashboard({ section, data }) {
+
+// DEPENDENCIES
+import type { AuthData } from "./utils/token";
+interface AdminDashboardProps {
+  section: "dashboard" | "tickets" | "credentials" | string;
+  data: AuthData;
+}
+
+// DASHBOARD
+export default function AdminDashboard({ section, data }: AdminDashboardProps) {
   switch (section) {
     case "tickets":
       return <div>📩 Panel de Tickets (Admin/Mod)</div>;

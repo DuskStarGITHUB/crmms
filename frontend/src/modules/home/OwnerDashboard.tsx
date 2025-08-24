@@ -4,7 +4,16 @@
  *  DESCRIPTION: Dashboard de Access Owners
  * =====================================================
  */
-export default function OwnerDashboard({ section, data }) {
+
+// DEPENDENCIES
+import type { AuthData } from "./utils/token";
+interface AdminDashboardProps {
+  section: "dashboard" | "tickets" | "credentials" | string;
+  data: AuthData;
+}
+
+// DASHBOARD
+export default function OwnerDashboard({ section, data }: AdminDashboardProps) {
   switch (section) {
     case "tickets":
       return <div>📩 Tickets asociados a tu organización</div>;
