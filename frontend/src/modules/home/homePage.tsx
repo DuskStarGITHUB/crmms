@@ -26,6 +26,8 @@ import AdminDashboard from "./AdminDashboard";
 import OwnerDashboard from "./OwnerDashboard";
 import SpotDashboard from "./SpotDashboard";
 import UserDashboard from "./UserDashboard";
+import ConfigurationPage from "./configurationPage";
+import ProfilePage from "./profilePage";
 
 export default function HomePage() {
   const [data, setData] = useState<AuthData | null>(null);
@@ -39,24 +41,12 @@ export default function HomePage() {
     fetchAuthData(token).then((res) => setData(res));
   }, []);
 
-  if (!data) {
-    return (
-      <div className="w-full h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center">
-          <div className="w-14 h-14 border-4 border-muted-foreground/30 border-t-primary rounded-full animate-spin"></div>
-          <p className="mt-4 text-muted-foreground animate-pulse text-lg font-medium">
-            Cargando CRM...
-          </p>
-        </div>
-      </div>
-    );
-  }
-
-  const role = data.account.role;
+  const role = data?.account.role ?? "";
 
   const logout = () => {
     localStorage.removeItem("token");
     setActive("logout");
+    setData(null);
   };
 
   const sidebarOptions: Record<
@@ -144,44 +134,56 @@ export default function HomePage() {
   };
 
   const renderDashboard = () => {
-    if (active === "logout")
+    if (!data || active === "logout") {
       return <div className="text-center mt-20 text-xl">Sesión cerrada</div>;
-    switch (role) {
-      case "admin":
-      case "mod":
-        return <AdminDashboard section={active} data={data} />;
-      case "access_owner":
-        return <OwnerDashboard section={active} data={data} />;
-      case "spot":
-        return <SpotDashboard section={active} data={data} />;
-      case "user":
-        return <UserDashboard section={active} data={data} />;
+    }
+    switch (active) {
+      case "dashboard":
+      case "tickets":
+      case "credentials":
+      case "guilds":
+      case "spots":
+      case "builders":
+      case "reports":
+        switch (role) {
+          case "admin":
+          case "mod":
+            return <AdminDashboard section={active} data={data} />;
+          case "access_owner":
+            return <OwnerDashboard section={active} data={data} />;
+          case "spot":
+            return <SpotDashboard section={active} data={data} />;
+          case "user":
+            return <UserDashboard section={active} data={data} />;
+        }
+        break;
+      case "profile":
+        return <ProfilePage />;
+      case "configuration":
+        return <ConfigurationPage />;
       default:
-        return <div>Rol desconocido</div>;
+        return <div>Sección desconocida</div>;
     }
   };
 
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
+      {/* SIDEBAR DESKTOP */}
       <aside
         className={`hidden md:flex md:flex-col border-r border-border bg-sidebar transition-all duration-300 ${
           sidebarOpen ? "w-64" : "w-20"
         }`}
       >
         <div className="flex flex-col flex-1 p-6 gap-4">
-          {/* LOGO */}
-          <div className="flex items-center justify-center mb-6">
-            {sidebarOpen && (
-              <>
-                <Box className="w-8 h-8 mr-2 text-primary" />
-                <span className="text-2xl font-extrabold tracking-tight text-foreground">
-                  CRMMS
-                </span>
-              </>
-            )}
-          </div>
+          {sidebarOpen && (
+            <div className="flex items-center justify-center mb-6">
+              <Box className="w-8 h-8 mr-2 text-primary" />
+              <span className="text-2xl font-extrabold tracking-tight text-foreground">
+                CRMMS
+              </span>
+            </div>
+          )}
 
-          {/* MENÚ */}
           <nav className="flex-1 flex flex-col gap-2">
             {sidebarOptions[role]?.map((opt, idx) => (
               <Button
@@ -198,9 +200,7 @@ export default function HomePage() {
             ))}
           </nav>
 
-          {/* BOTONES INFERIORES */}
-          <div className="mt-auto flex flex-col items-center gap-2">
-            {/* Toggle Sidebar */}
+          <div className="mt-auto flex justify-between items-center w-full px-2">
             <Button
               variant="ghost"
               size="icon"
@@ -212,8 +212,6 @@ export default function HomePage() {
                 <ChevronsRight className="w-5 h-5" />
               )}
             </Button>
-
-            {/* Logout */}
             <Button
               variant="secondary"
               size="icon"
@@ -226,6 +224,7 @@ export default function HomePage() {
         </div>
       </aside>
 
+      {/* SIDEBAR MOBILE */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger asChild>
           <Button
@@ -259,17 +258,27 @@ export default function HomePage() {
               </Button>
             ))}
           </nav>
-          <Button
-            variant="secondary"
-            size="icon"
-            className="mt-6 rounded-full flex items-center justify-center"
-            onClick={() => {
-              logout();
-              setMobileOpen(false);
-            }}
-          >
-            <LogOut className="w-5 h-5" />
-          </Button>
+          <div className="mt-6 flex justify-between w-full">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileOpen(false)}
+            >
+              {sidebarOpen ? (
+                <ChevronsLeft className="w-5 h-5" />
+              ) : (
+                <ChevronsRight className="w-5 h-5" />
+              )}
+            </Button>
+            <Button
+              variant="secondary"
+              size="icon"
+              className="rounded-full"
+              onClick={logout}
+            >
+              <LogOut className="w-5 h-5" />
+            </Button>
+          </div>
         </SheetContent>
       </Sheet>
       <main className="flex-1 overflow-auto p-6">
