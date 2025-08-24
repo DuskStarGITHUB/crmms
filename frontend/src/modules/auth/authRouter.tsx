@@ -43,8 +43,13 @@ export default function AuthRouter({ children }: AuthRouterProps) {
   }, [token]);
   if (loading) {
     return (
-      <div className="w-full h-full flex items-center justify-center">
-        <span className="animate-pulse text-gray-500">Verificando sesión…</span>
+      <div className="w-full h-screen flex items-center justify-center bg-gray-50">
+        <div className="flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-gray-300 border-t-gray-600 rounded-full animate-spin"></div>
+          <span className="mt-4 animate-pulse text-gray-600 text-lg font-medium">
+            Verificando sesión…
+          </span>
+        </div>
       </div>
     );
   }

@@ -71,17 +71,12 @@ export class AuthService {
   }
   // GENERATE TOKEN
   private signAccessToken(account: any) {
-    const payload: JwtPayload = {
-      sub: account.id,
-      role: account.role_name,
-      type: 'account',
-    };
+    const payload = { sub: account.id, role: account.role_name };
     const token = this.jwtService.sign(payload);
     const decoded: any = this.jwtService.decode(token);
     return {
       access_token: token,
       expires_at: decoded?.exp,
-      type: 'account',
     };
   }
   // VALID TOKEN
