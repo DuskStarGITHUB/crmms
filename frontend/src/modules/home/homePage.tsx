@@ -37,8 +37,7 @@ export default function HomePage() {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
-    if (!token) return;
-    fetchAuthData(token).then((res) => setData(res));
+    if (token) fetchAuthData(token).then(setData);
   }, []);
 
   const role = data?.account.role ?? "";
@@ -133,42 +132,78 @@ export default function HomePage() {
     ],
   };
 
-  const renderDashboard = () => {
-    if (!data || active === "logout") {
+  const renderContent = () => {
+    if (!data || active === "logout")
       return <div className="text-center mt-20 text-xl">Sesión cerrada</div>;
-    }
-    switch (active) {
-      case "dashboard":
-      case "tickets":
-      case "credentials":
-      case "guilds":
-      case "spots":
-      case "builders":
-      case "reports":
-        switch (role) {
-          case "admin":
-          case "mod":
-            return <AdminDashboard section={active} data={data} />;
-          case "access_owner":
-            return <OwnerDashboard section={active} data={data} />;
-          case "spot":
-            return <SpotDashboard section={active} data={data} />;
-          case "user":
-            return <UserDashboard section={active} data={data} />;
-        }
-        break;
-      case "profile":
-        return <ProfilePage />;
-      case "configuration":
-        return <ConfigurationPage />;
+    if (active === "profile") return <ProfilePage />;
+    if (active === "configuration") return <ConfigurationPage />;
+
+    switch (role) {
+      case "admin":
+      case "mod":
+        return <AdminDashboard section={active} data={data} />;
+      case "access_owner":
+        return <OwnerDashboard section={active} data={data} />;
+      case "spot":
+        return <SpotDashboard section={active} data={data} />;
+      case "user":
+        return <UserDashboard section={active} data={data} />;
       default:
         return <div>Sección desconocida</div>;
     }
   };
 
+  const SidebarButton = ({
+    opt,
+  }: {
+    opt: { label: string; icon: any; action: () => void };
+  }) => (
+    <Button
+      variant="ghost"
+      className={`flex items-center gap-3 justify-start rounded-lg ${
+        !sidebarOpen ? "justify-center" : ""
+      }`}
+      onClick={opt.action}
+    >
+      <opt.icon className="w-5 h-5" />
+      {sidebarOpen && opt.label}
+    </Button>
+  );
+
+  const SidebarFooter = () => {
+    if (!sidebarOpen)
+      return (
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSidebarOpen(true)}
+        >
+          <ChevronsRight className="w-5 h-5" />
+        </Button>
+      );
+    return (
+      <div className="mt-auto flex gap-2 justify-center">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <ChevronsLeft className="w-5 h-5" />
+        </Button>
+        <Button
+          variant="secondary"
+          size="icon"
+          className="rounded-full"
+          onClick={logout}
+        >
+          <LogOut className="w-5 h-5" />
+        </Button>
+      </div>
+    );
+  };
+
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
-      {/* SIDEBAR DESKTOP */}
       <aside
         className={`hidden md:flex md:flex-col border-r border-border bg-sidebar transition-all duration-300 ${
           sidebarOpen ? "w-64" : "w-20"
@@ -183,48 +218,15 @@ export default function HomePage() {
               </span>
             </div>
           )}
-
           <nav className="flex-1 flex flex-col gap-2">
             {sidebarOptions[role]?.map((opt, idx) => (
-              <Button
-                key={idx}
-                variant="ghost"
-                className={`flex items-center gap-3 justify-start rounded-lg ${
-                  !sidebarOpen ? "justify-center" : ""
-                }`}
-                onClick={opt.action}
-              >
-                <opt.icon className="w-5 h-5" />
-                {sidebarOpen && opt.label}
-              </Button>
+              <SidebarButton key={idx} opt={opt} />
             ))}
           </nav>
-
-          <div className="mt-auto flex justify-between items-center w-full px-2">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setSidebarOpen(!sidebarOpen)}
-            >
-              {sidebarOpen ? (
-                <ChevronsLeft className="w-5 h-5" />
-              ) : (
-                <ChevronsRight className="w-5 h-5" />
-              )}
-            </Button>
-            <Button
-              variant="secondary"
-              size="icon"
-              className="rounded-full"
-              onClick={logout}
-            >
-              <LogOut className="w-5 h-5" />
-            </Button>
-          </div>
+          <SidebarFooter />
         </div>
       </aside>
 
-      {/* SIDEBAR MOBILE */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
         <SheetTrigger asChild>
           <Button
@@ -274,15 +276,19 @@ export default function HomePage() {
               variant="secondary"
               size="icon"
               className="rounded-full"
-              onClick={logout}
+              onClick={() => {
+                logout();
+                setMobileOpen(false);
+              }}
             >
               <LogOut className="w-5 h-5" />
             </Button>
           </div>
         </SheetContent>
       </Sheet>
+
       <main className="flex-1 overflow-auto p-6">
-        {renderDashboard()}
+        {renderContent()}
         <Outlet />
       </main>
     </div>
