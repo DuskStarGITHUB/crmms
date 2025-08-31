@@ -1,14 +1,13 @@
 /**
  * =====================================================
  *  NAME    : homePage.tsx
- *  DESCRIPTION: home page (dashbaords roles)
+ *  DESCRIPTION: Home page render
  * =====================================================
  */
 
-// DEPENDENCIES && COMPONENTS
 "use client";
+
 import { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
 import { fetchAuthData } from "./utils/token";
 import type { AuthData } from "./utils/token";
 import { Button } from "@/components/ui/button";
@@ -27,41 +26,25 @@ import {
   ChevronsLeft,
   ChevronsRight,
 } from "lucide-react";
-import AdminDashboard from "./AdminDashboard";
-import OwnerDashboard from "./OwnerDashboard";
-import SpotDashboard from "./SpotDashboard";
-import UserDashboard from "./UserDashboard";
-import ConfigurationPage from "./configurationPage";
+import RenderDashboard from "./RenderDashboard";
 import ProfilePage from "./profilePage";
+import ConfigurationPage from "./configurationPage";
 
-// PAGE
 export default function HomePage() {
   const [data, setData] = useState<AuthData | null>(null);
-  const [active, setActive] = useState("dashboard");
+  const [active, setActive] = useState("dashboard"); // sección activa
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
-
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) fetchAuthData(token).then(setData);
   }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) setMobileOpen(false);
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
   const role = data?.account.role ?? "";
   const logout = () => {
     localStorage.removeItem("token");
     setActive("logout");
     setData(null);
   };
-
   const sidebarOptions: Record<
     string,
     { label: string; icon: any; action: () => void }[]
@@ -75,6 +58,21 @@ export default function HomePage() {
         action: () => setActive("credentials"),
       },
       { label: "Tickets", icon: Ticket, action: () => setActive("tickets") },
+      {
+        label: "Configuración",
+        icon: Settings,
+        action: () => setActive("configuration"),
+      },
+    ],
+    mod: [
+      { label: "Dashboard", icon: Home, action: () => setActive("dashboard") },
+      { label: "Tickets", icon: Ticket, action: () => setActive("tickets") },
+      {
+        label: "Credenciales",
+        icon: Users,
+        action: () => setActive("credentials"),
+      },
+      { label: "Perfil", icon: User, action: () => setActive("profile") },
       {
         label: "Configuración",
         icon: Settings,
@@ -98,11 +96,7 @@ export default function HomePage() {
       { label: "Dashboard", icon: Home, action: () => setActive("dashboard") },
       { label: "Tickets", icon: Ticket, action: () => setActive("tickets") },
       { label: "Builders", icon: Users, action: () => setActive("builders") },
-      {
-        label: "Perfil (Área)",
-        icon: User,
-        action: () => setActive("profile"),
-      },
+      { label: "Perfil", icon: User, action: () => setActive("profile") },
       {
         label: "Configuración",
         icon: Settings,
@@ -129,43 +123,22 @@ export default function HomePage() {
         action: () => setActive("configuration"),
       },
     ],
-    mod: [
-      { label: "Dashboard", icon: Home, action: () => setActive("dashboard") },
-      { label: "Tickets", icon: Ticket, action: () => setActive("tickets") },
-      {
-        label: "Credenciales",
-        icon: Users,
-        action: () => setActive("credentials"),
-      },
-      { label: "Perfil", icon: User, action: () => setActive("profile") },
-      {
-        label: "Configuración",
-        icon: Settings,
-        action: () => setActive("configuration"),
-      },
-    ],
   };
-
   const renderContent = () => {
-    if (!data || active === "logout")
+    if (!data || active === "logout") {
       return <div className="text-center mt-20 text-xl">Sesión cerrada</div>;
-    if (active === "profile") return <ProfilePage />;
-    if (active === "configuration") return <ConfigurationPage />;
-    switch (role) {
-      case "admin":
-      case "mod":
-        return <AdminDashboard section={active} data={data} />;
-      case "access_owner":
-        return <OwnerDashboard section={active} data={data} />;
-      case "spot":
-        return <SpotDashboard section={active} data={data} />;
-      case "user":
-        return <UserDashboard section={active} data={data} />;
+    }
+    switch (active) {
+      case "dashboard":
+        return <RenderDashboard data={data} />;
+      case "profile":
+        return <ProfilePage />;
+      case "configuration":
+        return <ConfigurationPage />;
       default:
-        return <div>Sección desconocida</div>;
+        return <div className="p-4 border rounded-md">Sección: {active}</div>;
     }
   };
-
   const SidebarButton = ({
     opt,
   }: {
@@ -176,13 +149,12 @@ export default function HomePage() {
       className={`flex items-center gap-3 justify-start rounded-lg ${
         !sidebarOpen ? "justify-center" : ""
       }`}
-      onClick={opt.action}lucide-
+      onClick={opt.action}
     >
       <opt.icon className="w-5 h-5" />
       {sidebarOpen && opt.label}
     </Button>
   );
-
   const SidebarFooter = () => {
     if (!sidebarOpen)
       return (
@@ -216,14 +188,13 @@ export default function HomePage() {
   };
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
-      {/* Sidebar para PC / escritorio */}
+      {/* Sidebar escritorio */}
       <aside
         className={`hidden md:flex md:flex-col border-r border-border bg-sidebar transition-all duration-300 ${
           sidebarOpen ? "w-64" : "w-20"
         }`}
       >
         <div className="flex flex-col flex-1 p-6 gap-4">
-          {/* Logo / encabezado solo si el sidebar está abierto */}
           {sidebarOpen && (
             <div className="flex items-center justify-center mb-6">
               <Box className="w-8 h-8 mr-2 text-primary" />
@@ -232,19 +203,16 @@ export default function HomePage() {
               </span>
             </div>
           )}
-          {/* Navegación */}
           <nav className="flex-1 flex flex-col gap-2">
             {sidebarOptions[role]?.map((opt, idx) => (
               <SidebarButton key={idx} opt={opt} />
             ))}
           </nav>
-          {/* Footer del sidebar */}
           <SidebarFooter />
         </div>
       </aside>
-      {/* Sidebar para Móvil */}
+      {/* Sidebar móvil */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
-        {/* Botón para abrir sidebar móvil */}
         <SheetTrigger asChild>
           <Button
             variant="ghost"
@@ -255,14 +223,12 @@ export default function HomePage() {
           </Button>
         </SheetTrigger>
         <SheetContent side="left" className="w-64 p-6" hideCloseButton>
-          {/* Logo / encabezado */}
           <div className="flex items-center justify-center mb-6">
             <Box className="w-8 h-8 mr-2 text-primary" />
             <span className="text-2xl font-extrabold tracking-tight text-foreground">
               CRMMS
             </span>
           </div>
-          {/* Navegación móvil */}
           <nav className="flex flex-col gap-2">
             {sidebarOptions[role]?.map((opt, idx) => (
               <Button
@@ -279,7 +245,6 @@ export default function HomePage() {
               </Button>
             ))}
           </nav>
-          {/* Footer móvil: solo un botón para cerrar + logout */}
           <div className="mt-6 flex justify-end w-full gap-2">
             <Button
               variant="ghost"
@@ -302,10 +267,8 @@ export default function HomePage() {
           </div>
         </SheetContent>
       </Sheet>
-      <main className="flex-1 overflow-auto p-6">
-        {renderContent()}
-        <Outlet />
-      </main>
+      {/* Main content */}
+      <main className="flex-1 overflow-auto p-6">{renderContent()}</main>
     </div>
   );
 }
