@@ -5,22 +5,21 @@
  * =====================================================
  */
 
-// RenderDashboard.tsx
+// DEPENDENCIES
 import type { AuthData } from "./utils/token";
+import AdminDashboard from "./admin/Dashboard";
 
+// LOGIC
 interface RenderDashboardProps {
   data: AuthData;
 }
 
+// RENDER
 export default function RenderDashboard({ data }: RenderDashboardProps) {
   const role = data.account.role;
   switch (role) {
     case "admin":
-      return (
-        <div>
-          📊 Dashboard Admin: supervisión de usuarios, credenciales y tickets
-        </div>
-      );
+      return <AdminDashboard data={data} />;
     case "mod":
       return (
         <div>🛡 Dashboard Mod: gestión de tickets y usuarios limitados</div>
