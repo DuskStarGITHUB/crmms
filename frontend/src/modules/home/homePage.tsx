@@ -40,29 +40,41 @@ export default function HomePage() {
   const [active, setActive] = useState("dashboard");
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
+
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) fetchAuthData(token).then(setData);
   }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) setMobileOpen(false);
+    };
+    window.addEventListener("resize", handleResize);
+    handleResize();
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   const role = data?.account.role ?? "";
   const logout = () => {
     localStorage.removeItem("token");
     setActive("logout");
     setData(null);
   };
+
   const sidebarOptions: Record<
     string,
     { label: string; icon: any; action: () => void }[]
   > = {
     admin: [
       { label: "Dashboard", icon: Home, action: () => setActive("dashboard") },
-      { label: "Tickets", icon: Ticket, action: () => setActive("tickets") },
+      { label: "Perfil", icon: User, action: () => setActive("profile") },
       {
         label: "Credenciales",
         icon: Users,
         action: () => setActive("credentials"),
       },
-      { label: "Perfil", icon: User, action: () => setActive("profile") },
+      { label: "Tickets", icon: Ticket, action: () => setActive("tickets") },
       {
         label: "Configuración",
         icon: Settings,
@@ -133,6 +145,7 @@ export default function HomePage() {
       },
     ],
   };
+
   const renderContent = () => {
     if (!data || active === "logout")
       return <div className="text-center mt-20 text-xl">Sesión cerrada</div>;
@@ -152,6 +165,7 @@ export default function HomePage() {
         return <div>Sección desconocida</div>;
     }
   };
+
   const SidebarButton = ({
     opt,
   }: {
@@ -162,12 +176,13 @@ export default function HomePage() {
       className={`flex items-center gap-3 justify-start rounded-lg ${
         !sidebarOpen ? "justify-center" : ""
       }`}
-      onClick={opt.action}
+      onClick={opt.action}lucide-
     >
       <opt.icon className="w-5 h-5" />
       {sidebarOpen && opt.label}
     </Button>
   );
+
   const SidebarFooter = () => {
     if (!sidebarOpen)
       return (
@@ -180,14 +195,7 @@ export default function HomePage() {
         </Button>
       );
     return (
-      <div className="mt-auto flex gap-2 justify-center">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setSidebarOpen(false)}
-        >
-          <ChevronsLeft className="w-5 h-5" />
-        </Button>
+      <div className="mt-auto flex gap-2 justify-end">
         <Button
           variant="secondary"
           size="icon"
@@ -196,17 +204,26 @@ export default function HomePage() {
         >
           <LogOut className="w-5 h-5" />
         </Button>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => setSidebarOpen(false)}
+        >
+          <ChevronsLeft className="w-5 h-5" />
+        </Button>
       </div>
     );
   };
   return (
     <div className="flex h-screen w-full overflow-hidden bg-background">
+      {/* Sidebar para PC / escritorio */}
       <aside
         className={`hidden md:flex md:flex-col border-r border-border bg-sidebar transition-all duration-300 ${
           sidebarOpen ? "w-64" : "w-20"
         }`}
       >
         <div className="flex flex-col flex-1 p-6 gap-4">
+          {/* Logo / encabezado solo si el sidebar está abierto */}
           {sidebarOpen && (
             <div className="flex items-center justify-center mb-6">
               <Box className="w-8 h-8 mr-2 text-primary" />
@@ -215,15 +232,19 @@ export default function HomePage() {
               </span>
             </div>
           )}
+          {/* Navegación */}
           <nav className="flex-1 flex flex-col gap-2">
             {sidebarOptions[role]?.map((opt, idx) => (
               <SidebarButton key={idx} opt={opt} />
             ))}
           </nav>
+          {/* Footer del sidebar */}
           <SidebarFooter />
         </div>
       </aside>
+      {/* Sidebar para Móvil */}
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+        {/* Botón para abrir sidebar móvil */}
         <SheetTrigger asChild>
           <Button
             variant="ghost"
@@ -233,13 +254,15 @@ export default function HomePage() {
             <Menu className="h-6 w-6" />
           </Button>
         </SheetTrigger>
-        <SheetContent side="left" className="w-64 p-6">
+        <SheetContent side="left" className="w-64 p-6" hideCloseButton>
+          {/* Logo / encabezado */}
           <div className="flex items-center justify-center mb-6">
             <Box className="w-8 h-8 mr-2 text-primary" />
             <span className="text-2xl font-extrabold tracking-tight text-foreground">
               CRMMS
             </span>
           </div>
+          {/* Navegación móvil */}
           <nav className="flex flex-col gap-2">
             {sidebarOptions[role]?.map((opt, idx) => (
               <Button
@@ -256,17 +279,14 @@ export default function HomePage() {
               </Button>
             ))}
           </nav>
-          <div className="mt-6 flex justify-between w-full">
+          {/* Footer móvil: solo un botón para cerrar + logout */}
+          <div className="mt-6 flex justify-end w-full gap-2">
             <Button
               variant="ghost"
               size="icon"
               onClick={() => setMobileOpen(false)}
             >
-              {sidebarOpen ? (
-                <ChevronsLeft className="w-5 h-5" />
-              ) : (
-                <ChevronsRight className="w-5 h-5" />
-              )}
+              <ChevronsLeft className="w-5 h-5" />
             </Button>
             <Button
               variant="secondary"

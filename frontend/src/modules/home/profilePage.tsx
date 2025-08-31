@@ -17,17 +17,42 @@ export default function ProfilePage() {
   }, []);
   if (!data) return <p>Cargando perfil...</p>;
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Perfil</h1>
-      <p>
-        <strong>Usuario:</strong> {data.user.first_name}
-      </p>
-      <p>
-        <strong>Rol:</strong> {data.account.role}
-      </p>
-      <p>
-        <strong>Guild:</strong> {data.user.phone ?? "N/A"}
-      </p>
-    </div>
+    <section className="p-6 text-center">
+      <header>
+        <h1 className="text-5xl">Perfil de Cuenta</h1>
+      </header>
+      <article className="mt-8 max-w-4xl mx-auto">
+        <table className="w-full border-collapse text-left text-lg sm:text-xl">
+          <tbody>
+            <tr className="border-b border-gray-300">
+              <th className="py-3 pr-6 font-medium">Nombre completo</th>
+              <td className="py-3">
+                {data.user.first_name} {data.user.last_name}
+              </td>
+            </tr>
+            <tr className="border-b border-gray-300">
+              <th className="py-3 pr-6 font-medium">Correo electrónico</th>
+              <td className="py-3">{data.account.email}</td>
+            </tr>
+            {data.user.phone && (
+              <tr className="border-b border-gray-300">
+                <th className="py-3 pr-6 font-medium">Teléfono</th>
+                <td className="py-3">{data.user.phone}</td>
+              </tr>
+            )}
+            {data.user.address && (
+              <tr className="border-b border-gray-300">
+                <th className="py-3 pr-6 font-medium">Dirección</th>
+                <td className="py-3">{data.user.address}</td>
+              </tr>
+            )}
+            <tr className="border-b border-gray-300">
+              <th className="py-3 pr-6 font-medium">Rol</th>
+              <td className="py-3">{data.account.role}</td>
+            </tr>
+          </tbody>
+        </table>
+      </article>
+    </section>
   );
 }
